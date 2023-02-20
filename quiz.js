@@ -65,16 +65,16 @@ function selectOption() {
 
 function submitAnswers() {
   const selectedOptions = document.querySelectorAll(".selected");
-  if (selectedOptions) {
-selectedOptions.forEach((selectedOption) => {
-const answer = selectedOption.getAttribute("data-answer");
-const questionIndex = selectedOption.parentNode.parentNode.querySelector(".question").getAttribute("data-question");
-if (answer == quizData[questionIndex].answer) {
-score++;
-}
-});
-showScore();
-}
+  if (selectedOptions.length > 0) {
+    selectedOptions.forEach((selectedOption) => {
+      const answer = selectedOption.getAttribute("data-answer");
+      const questionIndex = selectedOption.parentNode.parentNode.querySelector(".question").getAttribute("data-question");
+      if (answer == quizData[questionIndex].answer) {
+        score++;
+      }
+    });
+    showScore();
+  }
 }
 
 function showScore() {
