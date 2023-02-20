@@ -30,71 +30,69 @@ const quizData = [
 // Initialize the quiz
 let currentQuestion = 0;
 let score = 0;
-const questionElements = document.querySelectorAll(".question");
-const optionElements = document.querySelectorAll(".options");
+const questionContainers = document.querySelectorAll(".question-container");
+const questions = document.querySelectorAll(".question");
+const options = document.querySelectorAll(".options");
 const submitButton = document.getElementById("submit-button");
 const scoreElement = document.getElementById("score");
 
 function showQuestion() {
-  questionElements.forEach((question, index) => {
-    question.innerText = quizData[index].question;
-    optionElements[index].innerHTML = "";
-    quizData[index].options.forEach((option, optionIndex) => {
-      const button = document.createElement("button");
-      button.innerText = option;
-      button.classList.add("option");
-      button.setAttribute("data-answer", optionIndex);
-      optionElements[index].appendChild(button);
-    });
+  questions[currentQuestion].innerText = quizData[currentQuestion].question;
+  options[currentQuestion].innerHTML = "";
+  quizData[currentQuestion].options.forEach((option, optionIndex) => {
+    const button = document.createElement("button");
+    button.innerText = option;
+    button.classList.add("option");
+    button.setAttribute("data-answer", optionIndex);
+    options[currentQuestion].appendChild(button);
   });
   submitButton.disabled = true;
 }
 
 function selectOption() {
-  const options = document.querySelectorAll(".option");
-  options.forEach((option) => {
-    option.addEventListener("click", () => {
-      options.forEach((option) => {
-        option.classList.remove("selected");
+  const optionButtons = document.querySelectorAll(".option");
+  optionButtons.forEach((optionButton) => {
+    optionButton.addEventListener("click", () => {
+      optionButtons.forEach((button) => {
+        button.classList.remove("selected");
       });
-      option.classList.add("selected");
+      optionButton.classList.add("selected");
       submitButton.disabled = false;
     });
   });
 }
 
 function submitAnswers() {
-  const selectedOptions = document.querySelectorAll(".selected");
-  if (selectedOptions.length > 0) {
-    selectedOptions.forEach((selectedOption) => {
-      const answer = selectedOption.getAttribute("data-answer");
-      const questionIndex = selectedOption.parentNode.parentNode.querySelector(".question").getAttribute("data-question");
-      if (answer == quizData[questionIndex].answer) {
-        score++;
-      }
-    });
-    showScore();
+  const selectedOption = options[currentQuestion].querySelector(".selected");
+  if (selectedOption) {
+    const answer = selectedOption.getAttribute("data-answer");
+    if (answer == quizData[currentQuestion].answer) {
+      score++;
+    }
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+      showQuestion();
+    } else {
+      showScore();
+    }
   }
 }
 
 function showScore() {
-questionElements.forEach((question) => {
-question.style.display = "none";
-});
-optionElements.forEach((option) => {
-option.style.display = "none";
-});
-submitButton.style.display = "none";
-scoreElement.innerText = score + " out of " + quizData.length;
-document.getElementById("score-container").style.display = "block";
+  questionContainers.forEach((questionContainer) => {
+    questionContainer.style.display = "none";
+  });
+  submitButton.style.display = "none";
+  scoreElement.innerText = score + " out of " + quizData.length;
+  document.getElementById("score-container").style.display = "block";
 }
 
 // Add event listeners
 submitButton.addEventListener("click", submitAnswers);
 
 // Set the data-question attribute for each question
-questionElements.forEach((question, index) => {
-question.setAttribute("data-question", index);
+questions.forEach((question, index) => {
+  question.setAttribute("data-question", index);
 });
 
 // Start the quiz
