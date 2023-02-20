@@ -30,21 +30,22 @@ const quizData = [
 // Initialize the quiz
 let currentQuestion = 0;
 let score = 0;
-const questionElement = document.getElementById("question");
-const optionElements = document.getElementById("options");
-const scoreElement = document.getElementById("score");
+const questionElements = document.querySelectorAll(".question");
+const optionElements = document.querySelectorAll(".options");
 const submitButton = document.getElementById("submit-button");
+const scoreElement = document.getElementById("score");
 
 function showQuestion() {
-  const currentQuizData = quizData[currentQuestion];
-  questionElement.innerText = currentQuizData.question;
-  optionElements.innerHTML = "";
-  currentQuizData.options.forEach((option, index) => {
-    const button = document.createElement("button");
-    button.innerText = option;
-    button.classList.add("option");
-    button.setAttribute("data-answer", index);
-    optionElements.appendChild(button);
+  questionElements.forEach((question, index) => {
+    question.innerText = quizData[index].question;
+    optionElements[index].innerHTML = "";
+    quizData[index].options.forEach((option, optionIndex) => {
+      const button = document.createElement("button");
+      button.innerText = option;
+      button.classList.add("option");
+      button.setAttribute("data-answer", optionIndex);
+      optionElements[index].appendChild(button);
+    });
   });
   submitButton.disabled = true;
 }
@@ -62,32 +63,39 @@ function selectOption() {
   });
 }
 
-function submitAnswer() {
-  const selectedOption = document.querySelector(".selected");
-  if (selectedOption) {
-    const answer = selectedOption.getAttribute("data-answer");
-    if (answer == quizData[currentQuestion].answer) {
-      score++;
-    }
-    currentQuestion++;
-    if (currentQuestion < quizData.length) {
-      showQuestion();
-    } else {
-      showScore();
-    }
-  }
+function submitAnswers() {
+  const selectedOptions = document.querySelectorAll(".selected");
+  if (selectedOptions) {
+selectedOptions.forEach((selectedOption) => {
+const answer = selectedOption.getAttribute("data-answer");
+const questionIndex = selectedOption.parentNode.parentNode.querySelector(".question").getAttribute("data-question");
+if (answer == quizData[questionIndex].answer) {
+score++;
+}
+});
+showScore();
+}
 }
 
 function showScore() {
-  questionElement.style.display = "none";
-  optionElements.style.display = "none";
-  submitButton.style.display = "none";
-  scoreElement.innerText = score + " out of " + quizData.length;
-  document.getElementById("score-container").style.display = "block";
+questionElements.forEach((question) => {
+question.style.display = "none";
+});
+optionElements.forEach((option) => {
+option.style.display = "none";
+});
+submitButton.style.display = "none";
+scoreElement.innerText = score + " out of " + quizData.length;
+document.getElementById("score-container").style.display = "block";
 }
 
 // Add event listeners
-submitButton.addEventListener("click", submitAnswer);
+submitButton.addEventListener("click", submitAnswers);
+
+// Set the data-question attribute for each question
+questionElements.forEach((question, index) => {
+question.setAttribute("data-question", index);
+});
 
 // Start the quiz
 showQuestion();
